@@ -4,6 +4,9 @@ services:
   challenge:
     image: idwall-challenge:latest
     build: .
+    user: "65534"
+    cap_drop:
+    - ALL
     environment:
       NAME: "Gabriel Abdalla Cavalcante Silva"
     ports:
