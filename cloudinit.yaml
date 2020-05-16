@@ -1,0 +1,138 @@
+#cloud-config
+
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDJIR7+y8WCx0oZwZ8S3OBOsSvJkrwI3Tu2sshKXOS9zPjEoKA0t1YV2FdV3AUH3dG14dironbnl8iVmapWQ9s9veopBy2kXjrsXdMKlHhswHlAFezCyJv9o49NkMdW8pjSOb4dJZxzTIhbuLyejivIDKmQVrBbWHiVBY8DOk50i3GlT6ksXJzKsMwtYWX5zR7+EOjX1WqE1aXFnQX26w269nUiNK93hLYJcM5NMEvZvoyDPBWaAtGdnIjWG5rm71o5OxTZIYWtk+IOHQj+fTqZuPkS5mAy+ta1O4GSW5Hun+E8JlASSZUJMh4f0McXsW0eGeSOrKaVKxnEZgcWJ/un support@localhost
+
+
+write_files:
+- path: /home/chronos/httpd.conf
+  content: |
+    ServerRoot "/usr/local/apache2"
+    Listen 80
+
+    LoadModule mpm_event_module modules/mod_mpm_event.so
+    LoadModule authn_file_module modules/mod_authn_file.so
+    LoadModule authn_core_module modules/mod_authn_core.so
+    LoadModule authz_host_module modules/mod_authz_host.so
+    LoadModule authz_groupfile_module modules/mod_authz_groupfile.so
+    LoadModule authz_user_module modules/mod_authz_user.so
+    LoadModule authz_core_module modules/mod_authz_core.so
+    LoadModule access_compat_module modules/mod_access_compat.so
+    LoadModule auth_basic_module modules/mod_auth_basic.so
+    LoadModule reqtimeout_module modules/mod_reqtimeout.so
+    LoadModule filter_module modules/mod_filter.so
+    LoadModule mime_module modules/mod_mime.so
+    LoadModule log_config_module modules/mod_log_config.so
+    LoadModule env_module modules/mod_env.so
+    LoadModule headers_module modules/mod_headers.so
+    LoadModule setenvif_module modules/mod_setenvif.so
+    LoadModule version_module modules/mod_version.so
+    LoadModule unixd_module modules/mod_unixd.so
+    LoadModule status_module modules/mod_status.so
+    LoadModule autoindex_module modules/mod_autoindex.so
+
+    LoadModule dir_module modules/mod_dir.so
+    LoadModule alias_module modules/mod_alias.so
+
+    LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
+    LoadModule ssl_module modules/mod_ssl.so
+
+
+    <IfModule unixd_module>
+    User daemon
+    Group daemon
+    </IfModule>
+
+    ServerAdmin whoknows@idwall.com
+
+    <Directory />
+        AllowOverride none
+        Require all denied
+    </Directory>
+
+    DocumentRoot "/usr/local/apache2/htdocs"
+    <Directory "/usr/local/apache2/htdocs">
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Require all granted
+    </Directory>
+
+    <IfModule dir_module>
+        DirectoryIndex index.html
+    </IfModule>
+
+    <Files ".ht*">
+        Require all denied
+    </Files>
+
+    ErrorLog /proc/self/fd/2
+    LogLevel warn
+
+    <IfModule log_config_module>
+        LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+        LogFormat "%h %l %u %t \"%r\" %>s %b" common
+
+        <IfModule logio_module>
+          LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %I %O" combinedio
+        </IfModule>
+
+        CustomLog /proc/self/fd/1 common
+    </IfModule>
+
+    <IfModule alias_module>
+        ScriptAlias /cgi-bin/ "/usr/local/apache2/cgi-bin/"
+    </IfModule>
+
+    <Directory "/usr/local/apache2/cgi-bin">
+        AllowOverride None
+        Options None
+        Require all granted
+    </Directory>
+
+    <IfModule headers_module>
+        RequestHeader unset Proxy early
+    </IfModule>
+
+    <IfModule mime_module>
+        TypesConfig conf/mime.types
+        AddType application/x-compress .Z
+        AddType application/x-gzip .gz .tgz
+    </IfModule>
+
+    <IfModule proxy_html_module>
+    Include conf/extra/proxy-html.conf
+    </IfModule>
+
+
+    Include conf/extra/httpd-ssl.conf
+
+    <IfModule ssl_module>
+    SSLRandomSeed startup builtin
+    SSLRandomSeed connect builtin
+    </IfModule>
+
+- path: /home/chronos/server.crt
+  encoding: b64
+  content: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lKQVBxWHRSa0diSHJ5TUEwR0NTcUdTSWIzRFFFQkJRVUFNQ0F4SGpBY0JnTlYKQkFNVEZXbGtkMkZzYkM1MGN6TmpiM0p3TG1OdmJTNWljakFlRncweU1EQTFNVFV5TVRRMU1EaGFGdzB6TURBMQpNVE15TVRRMU1EaGFNQ0F4SGpBY0JnTlZCQU1URldsa2QyRnNiQzUwY3pOamIzSndMbU52YlM1aWNqQ0NBU0l3CkRRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0NBUW9DZ2dFQkFOdEFlNWtkdmJBc3FKSVJPcmVaa1FKMldOY1MKNzhpaVM3UDdaZ1pkc1IvNnBlWWp0dmRGVDZIUWZMbmZ2cmx5U1AwODhKd0daa0c2SEdYbnRjTmoxS090Z2Niago0V2x6Q3FZSnNPS21oQkVGRmRiVFQyRFlJa2srYkE4aWVOcTcwRWtid2FjK1JSM0s3VklteWRINmY5cmFFUDQ5CnV2dVF6L0lyY0UvSnRLV21PKzYzb2ttZUFZdVBpb0IrbWhPeTBQZ1g0WkVlZnExVUZMODhFc2dwa1R4SWk1SnQKdFdaVjNZeW0rQkNFZDBzeEZQNDNqV2dTeXJqN3dDczdWSWZqcDRpcUg4R1JEcERBN3ZEcHNRak10UXR6LzF6SgpNQmVOK2duTUI5TjNIQ01FZlc1c1BkczdvM1VQNTgxcDZicGdWNEQraG1HWmF3UDNFWmNXS2toczd1OENBd0VBCkFhTWtNQ0l3SUFZRFZSMFJCQmt3RjRJVmFXUjNZV3hzTG5Sek0yTnZjbkF1WTI5dExtSnlNQTBHQ1NxR1NJYjMKRFFFQkJRVUFBNElCQVFCY29zTjl4aENMZVdnRXVqWmhmYXNFOThLdWZxSEIrM3BBWk5sUFY3S0Y2eE9xUlMrVQpWYkt2MzBDcEJtck1VT1czdTcyaE1QTzkvRFlid0I2TzdJNzBlZ3RDT3F2VE5FR0hDMGYvZVlyclBHUDdLc25pCmtIWS9RUEZHTnNUbWFCb1VEbk51Y244bTFNRUVxYnBMZGJBR2dFVi95cjZ4czNTb05CY0IwNlJzMEtVMktERzcKdm4zUm83S3l5d3hNbjRtc3JraERuS3hSamt3R09vN1Jlb3k4K0FWQnd6QlFoaXhUT3podWFVampSWnp1NFJRVAp4TGtQNGRCcFNNZlZBNDZuZjMwS2JnYmFRZUxxUGIyNStDRnBHdlA0dHdmYXRJVGIxMTBnRnBlNmduT2dRUVZZCmMvNDJOc2hZRkorb3NULytHMllNUFkrb3FlTWpMSldRMm1lTgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+
+- path: /home/chronos/server.key
+  encoding: b64
+  content: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBMjBCN21SMjlzQ3lva2hFNnQ1bVJBblpZMXhMdnlLSkxzL3RtQmwyeEgvcWw1aU8yCjkwVlBvZEI4dWQrK3VYSkkvVHp3bkFabVFib2NaZWUxdzJQVW82MkJ4dVBoYVhNS3BnbXc0cWFFRVFVVjF0TlAKWU5naVNUNXNEeUo0MnJ2UVNSdkJwejVGSGNydFVpYkowZnAvMnRvUS9qMjYrNURQOGl0d1Q4bTBwYVk3N3JlaQpTWjRCaTQrS2dINmFFN0xRK0JmaGtSNStyVlFVdnp3U3lDbVJQRWlMa20yMVpsWGRqS2I0RUlSM1N6RVUvamVOCmFCTEt1UHZBS3p0VWgrT25pS29md1pFT2tNRHU4T214Q015MUMzUC9YTWt3RjQzNkNjd0gwM2NjSXdSOWJtdzkKMnp1amRRL256V25wdW1CWGdQNkdZWmxyQS9jUmx4WXFTR3p1N3dJREFRQUJBb0lCQVFDMVdRV2laUjRqblJ5bApESWt6bVZwKzNlS25xbXNZMlZ5aWR0c3hnc2RodXhFRFpTRU9MNDhwT1dnZzJmZElMa1krNSt2Z01jN2NxSkthCm0yZ1ZQL3ArazZIWEgxK3Z0ODdqL1BvSXpsQklQNXVMditaVkpSQmU0cm5BWHZQMWdBbE1ueCt6TkdjNHVFTkoKZ3ZuRnExdWJhbWxKMFVkYWtySGREWjdzNzlweWM1K0xBZjNyMGVMeE8yY3F1NURRSXArb0YrUGZVUkVUUW1mSQpiWVBHZlhwM3dGdWpVVGdYUFpjS1BqaWVhYXNQVlhoNWZZem9qL2EwdGM0bGVHUm94Y1V3RHhmVzR1aVU2K2I3Cis2M05BQU9DaUtnSDViK0hCYVFNSHZvSW1vWUdaekY2N254RnVTTDJFR2hJRVppNUFDOXRtRzhWMXNLdnM0SHoKczh1MXkvL1pBb0dCQVBsT0c1eUhZTDhNMTNQMjdIK2dQcFFON2FUSm5HWm90QXNoTDgyWDMvdjZPQTJtTW1SegpYZktmM1VmUjc0dm0rQjVqYWhMMFU4Y0RreUp2SFpIVDExc2pYMEhZQjBtL2ZLcHVzMk0vb2l3Rm5iN3NldCtWCkx6YmxidHZWRHgrNWZHN1FTME14WEx2RlRDVjNSTks2bGdYRUk2ZlgwajQ1blQ3ZFZtT1YxYmpUQW9HQkFPRWoKeE14UENuay9xbUJYbFRhRTM3RnUxZUNLWDdudnd3WE5ZYXN6eVNSRWsrTlM5WTB0NzlFb3RrL25oZlM1TWNXSgpZK0lNSUp0RTRBL1FSUm5IVFNlUzlyZ28yeEpQMzZJbEdQUWthSXU0dUY1eGwyMm9rT2xnclRoR1RRMzJQd003CkZ5NzJCK0FaNERtOXpYakRyNHlpZjZKWXpoVHFVbnhkejEwWGlKLzFBb0dBTElxYytrbGhxcUNqdWM5TEQ3NVUKaitVeEtUandIWWZsYXZ1aDY4eVBzeGhRZlhmTkZ3OVpvS2laUTJTcHRNZ3VXbGVPc3hZK0JaZUk2U1VMRm12UAoxVE9ycURydGltcVEzbTVxMUhlaEJOWjRDWTE4b29lbjZObnpCWW02YXdPYnpMeWdSY0FDL25WUWxuMEpxZEMyClR3OXRBMmJXNUZFczIvZDFvTk03WFFzQ2dZQS9KZGMzTHh4UzhlYUo2MGJ3NmNnTWJuZ1M2UHo4bkNGcGFUZngKMnk2WnU1cDNjbmRwUis4eURXZEZkanorYlV0bWlxaTNhSXRrd2FiUENLMjVFMHV5dytmcnM1bnV3dlNJK0RyTgpqOEM3SCs2bW50bklhalZySURDMXpoSWl6bVRTTlNyRmcwQ21QTnZGbGxVaGdGR204cFUySmc1M2sxbmJoRHg3CmNmUmlXUUtCZ1FDVXQ2UW9OWHlkTnhQbmhoajFPMHFjVmUwaW5pWEkxN0V0Q1RNOW9JRXRVV2NCcU5adnR3ak4KMjFjelBsQm5PS2tNMHAxTSs4VVg5S3oxZWgyRnlkVzhXdHo5ajNqTll5V04xNXZqc0M0K0h2QXNVUzdOVDNOSAp1WU9IQ1d2OFZ0QVp5NGhzb1ExbmtnWmVGUURuTTdjaVBiMTJKZDlNTW96ZXJCNW1OeEVNWkE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQ==
+
+- path: /etc/systemd/system/apache.service
+  permissions: 0644
+  owner: root
+  content: |
+    [Unit]
+    Description=Start an apache container
+
+    [Service]
+    ExecStart=/usr/bin/docker run -v /home/chronos/httpd.conf:/usr/local/apache2/conf/httpd.conf -v /home/chronos/server.crt:/usr/local/apache2/conf/server.crt -v /home/chronos/server.key:/usr/local/apache2/conf/server.key  -p 80:80 -p 443:443 --name=apache httpd:alpine
+    ExecStop=/usr/bin/docker stop apache
+    ExecStopPost=/usr/bin/docker rm apache
+
+runcmd:
+- mkdir -p /usr/local/apache2/conf
+- systemctl daemon-reload
+- systemctl start apache.service
+- systemctl enable apache.service
