@@ -132,7 +132,6 @@ write_files:
     ExecStopPost=/usr/bin/docker rm apache
 
 runcmd:
-- mkdir -p /usr/local/apache2/conf
 - systemctl daemon-reload
 - systemctl start apache.service
 - systemctl enable apache.service

@@ -1,8 +1,5 @@
-provider "google" {
-  credentials = "${file("account.json")}"
-  project = "idwall"
-  region = "us-central1"
-  zone = "us-west1-a"
+resource "google_compute_network" "idwall-network" {
+  name = "idwall-network"
 }
 
 resource "google_compute_instance" "idwall-apache" {
@@ -16,7 +13,7 @@ resource "google_compute_instance" "idwall-apache" {
   }
 
   network_interface {
-    network = "default"
+    network = "${google_compute_network.idwall-network.self_link}"
     access_config {}
   }
 
