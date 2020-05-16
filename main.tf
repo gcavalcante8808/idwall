@@ -9,6 +9,6 @@ variable "ssh-authorized-ip" {
 
 provider "google" {
   credentials   = "${file("account.json")}"
-  project       =  "idwall"
+  project       =  "idwall-challenge"
   region        =  var.region
 }
