@@ -1,0 +1,10 @@
+version: "2"
+
+services:
+  challenge:
+    image: idwall-challenge:latest
+    build: .
+    environment:
+      NAME: "Gabriel Abdalla Cavalcante Silva"
+    ports:
+      - 3000:3000
