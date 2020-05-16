@@ -3,6 +3,7 @@ replicaCount: 1
 
 containerPort: 3000
 healthcheck_url: "/healthcheck"
+candidate_name: "Gabriel Abdalla Cavalcante Silva"
 
 image:
   repository: gcavalcante8808/idwall

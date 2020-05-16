@@ -27,6 +27,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: NAME
+            value: "{{ .Values.candidate_name }}"
           ports:
             - name: http
               containerPort: {{ .Values.containerPort }}
