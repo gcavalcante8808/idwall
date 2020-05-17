@@ -12,6 +12,20 @@ You need the following cli tools installed to run the project:
 
 An working kubernetes cluster; personally I would recommend k3d/k3s (https://github.com/rancher/k3s).
 
+## Installing
+
+You can use the following command to install the project:
+
+```
+make
+```
+
+If you want to change the namespace, you can use the `NAMESPACE` environment variable:
+
+```
+NAMESPACE=custom make
+```
+
 ### Changes/Enhancements
 
 During the challenge, some enhancements were made.
