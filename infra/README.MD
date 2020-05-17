@@ -4,7 +4,7 @@ This folder presents the terraform definitions needed to deploy the resources de
 
 #### Requirements
 
-You need to provide the file `account.json` for an account-service with editor or owner on a google project and you need terraform installed.
+You need to provide the file `account.json` for an account-service with editor or owner on a google project callend `idwall-challenge` and you need terraform installed.
 
 #### Supported Params
 
