@@ -36,6 +36,8 @@ spec:
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
           livenessProbe:
+            periodSeconds: 60
+            failureThreshold: 3
             httpGet:
               path: {{ .Values.healthcheck_url }}
               port: http
