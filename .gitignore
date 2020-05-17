@@ -1,5 +1,5 @@
 account.json
-*.tfstate
-*.tfstate.backup
+**.tfstate
+**.tfstate.backup
 .terraform
 **node_modules
